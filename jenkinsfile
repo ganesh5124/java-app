@@ -1,35 +1,5 @@
 pipeline {
     agent any
-
-    stages {
-        stage('CLONE SCM') {
-            steps {
-                echo 'Cloning Mc-app project code'
-				git branch: 'main', url: 'https://github.com/devopstraininghub/mindcircuit13.git'
-            }
-        }
-		
-		stage('Build Artifact ') {
-            steps {
-                echo 'generating artifact with maven build tool'
-				sh 'mvn clean install'
-            }
-        }
-		
-		stage('Deploy to tomcat') {
-            steps {
-                echo 'Deploying artifact to tomcat webserver '
-				deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://52.201.234.58:8091/')], contextPath: 'facebook-app', war: '**/*.war'
-            }
-        }
-    }
-}
-
-
-
-
-pipeline {
-    agent any
     
     tools {
       maven 'maven3.9.8'
@@ -54,6 +24,12 @@ pipeline {
                     -Dsonar.login=squ_002b0d29dd7bb47df72586471eff5b0506ee2cf9'''
               }
         }
+        stage('Generating artifact with maven build tool'){
+            steps {
+                echo "generating artifact with maven build tool"
+                sh 'mvn clean install'
+            }
+        }
         stage('Build Artifact') {
           steps {
               echo 'Build Artifact'
@@ -61,6 +37,12 @@ pipeline {
               // 1
               sh 'mvn clean package'
               }
+        }
+        stage('Deploy to tomcat') {
+            steps {
+                echo 'Deploying artifact to tomcat webserver '
+				deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://52.201.234.58:8091/')], contextPath: 'facebook-app', war: '**/*.war'
+            }
         }
         stage('Build Docker Image') {
           steps {
