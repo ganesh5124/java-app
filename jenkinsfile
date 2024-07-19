@@ -24,3 +24,97 @@ pipeline {
         }
     }
 }
+
+
+
+
+pipeline {
+    agent any
+    
+    tools {
+      maven 'maven3.9.8'
+    }
+
+    stages {
+        stage('Checkout code from SCM') {
+            steps {
+                echo 'Checking out code from Git repo'
+                git branch: 'main', changelog: false, credentialsId: 'git-ID', poll: false, url: 'https://github.com/ganesh5124/java-app.git'
+            }
+        }
+        stage('SonarQube Scan') {
+          steps {
+              echo 'Scanning project'
+                // List directory contents for debugging purposes
+                sh 'ls -ltr'
+                // Run SonarQube scan with specified SonarQube server and login token
+                // 3
+                sh '''mvn sonar:sonar \\
+                    -Dsonar.host.url=http://65.2.39.121:9000 \\
+                    -Dsonar.login=squ_002b0d29dd7bb47df72586471eff5b0506ee2cf9'''
+              }
+        }
+        stage('Build Artifact') {
+          steps {
+              echo 'Build Artifact'
+              // Clean and package the project using Maven
+              // 1
+              sh 'mvn clean package'
+              }
+        }
+        stage('Build Docker Image') {
+          steps {
+              echo 'Build Docker Image'
+                // Build the Docker image using the Dockerfile in the project
+                // Tag the image with the current build number
+              sh 'docker build -t ganesh5124/docker-apps:${BUILD_NUMBER} .'
+            }
+        }
+        
+        
+        stage('Push to Docker Hub') {
+          steps {
+            script {
+              // Use Dockerhub credentials to access Docker Hub
+              withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+                  sh 'docker login -u ganesh5124 -p ${dockerhub}'
+              }
+              // Push the Docker image to Docker Hub
+              sh 'docker push ganesh5124/docker-apps:${BUILD_NUMBER}'
+              
+                echo 'Pushed to Docker Hub'
+            }
+          }
+        }
+        stage('Update Deployment File') {
+        environment {
+          GIT_REPO_NAME = "java-app"
+          GIT_USER_NAME = "ganesh5124"
+          
+        }
+        steps {
+            echo 'Update Deployment File'
+             // Use github-token to access GitHub
+             withCredentials([string(credentialsId: 'github-token-new', variable: 'githubtoken')]) {
+                 echo "came here git credentials block"
+             sh '''
+                    # Configure git user
+                    git config user.email "pvgkumar2001@gmail.com"
+                    git config user.name "ganesh5124"
+                
+                    # Replace the tag in the deployment YAML file with the current build number
+                    sed -i "s/docker-app:.*/docker-app:${BUILD_NUMBER}/g" manifestfiles/deployment.yaml
+                    # Stage all changes
+                    git add .
+            
+                    # Commit changes with a message containing the build number
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    echo ${github-token}
+                    # Push changes to the main branch of the GitHub repository
+                    git push https://${github-token-new}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+        '''
+            }
+}
+    }
+}
+}
