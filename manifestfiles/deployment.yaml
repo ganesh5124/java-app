@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: demo-app
-        image: ganesh5124/docker-apps:27
+        image: ganesh5124/docker-apps:28
         imagePullPolicy: IfNotPresent  # Always, IfNotPresent, Never
         ports:
         - containerPort: 8080
