@@ -1,12 +1,13 @@
-provider "aws" {
-  region = "ap-south-1a"
-  alias = "ap-south"
-}
-
 terraform {
   required_providers {
     aws = {
-        version = ""
+      source  = "hashicorp/aws"
+      version = "~> 3.27"
     }
   }
+  required_version = ">= 0.14.9"
+}
+provider "aws" {
+  profile = "default"
+  region  = "us-east-1"
 }
