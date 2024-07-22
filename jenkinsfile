@@ -6,28 +6,45 @@ pipeline {
     }
 
     stages {
-        stage('Checkout code from SCM') {
+        stage('Checkout') {
+        environment {
+          GIT_REPO_NAME = "java-app"
+          GIT_USER_NAME = "ganesh5124"
+          
+        }
             steps {
-                echo 'Checking out code from Git repo'
-                git branch: 'main', changelog: false, credentialsId: 'git-ID', poll: false, url: 'https://github.com/ganesh5124/java-app.git'
+                script {
+                    // removing any java-app repo exists
+                    sh 'rm -rf java-app'
+                    // Use the withCredentials block to bind the secret text to an environment variable
+                    withCredentials([string(credentialsId: 'my-git-secret-text', variable: 'GIT_TOKEN')]) {
+                        // Checkout the repository using the secret text
+                        sh 'git clone https://${GIT_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git'
+                    }
+                }
             }
         }
         stage('SonarQube Scan') {
+        environment {
+          GIT_REPO_NAME = "java-app"
+          GIT_USER_NAME = "ganesh5124"
+          
+        }
           steps {
               echo 'Scanning project'
                 // List directory contents for debugging purposes
                 sh 'ls -ltr'
                 // Run SonarQube scan with specified SonarQube server and login token
-                // 3
-                sh '''mvn sonar:sonar \\
-                    -Dsonar.host.url=http://65.2.39.121:9000 \\
-                    -Dsonar.login=squ_002b0d29dd7bb47df72586471eff5b0506ee2cf9'''
+                sh '''cd java-app 
+                     mvn sonar:sonar \\
+                    -Dsonar.host.url=http://52.66.238.60:9000 \\
+                    -Dsonar.login=squ_07c19e2563895b969f5ce50e2eb92d71295136ce'''
               }
         }
         stage('Generating artifact with maven build tool'){
             steps {
                 echo "generating artifact with maven build tool"
-                sh 'mvn clean install'
+                sh 'cd java-app && mvn clean install'
             }
         }
         stage('Build Artifact') {
@@ -35,21 +52,16 @@ pipeline {
               echo 'Build Artifact'
               // Clean and package the project using Maven
               // 1
-              sh 'mvn clean package'
+              sh 'cd java-app && mvn clean package'
               }
         }
-        stage('Deploy to tomcat') {
-            steps {
-                echo 'Deploying artifact to tomcat webserver '
-				deploy adapters: [tomcat9(credentialsId: 'tomcat', path: '', url: 'http://52.201.234.58:8091/')], contextPath: 'facebook-app', war: '**/*.war'
-            }
-        }
+        
         stage('Build Docker Image') {
           steps {
               echo 'Build Docker Image'
                 // Build the Docker image using the Dockerfile in the project
                 // Tag the image with the current build number
-              sh 'docker build -t ganesh5124/docker-apps:${BUILD_NUMBER} .'
+              sh 'cd java-app && docker build -t ganesh5124/docker-apps:${BUILD_NUMBER} .'
             }
         }
         
@@ -77,23 +89,23 @@ pipeline {
         steps {
             echo 'Update Deployment File'
              // Use github-token to access GitHub
-             withCredentials([string(credentialsId: 'github-token-new', variable: 'githubtoken')]) {
+             withCredentials([string(credentialsId: 'my-git-secret-text', variable: 'githubtoken')]) {
                  echo "came here git credentials block"
              sh '''
                     # Configure git user
-                    git config user.email "pvgkumar2001@gmail.com"
-                    git config user.name "ganesh5124"
-                
+                    git config --global user.email "pvgkumar2001@gmail.com"
+                    git config --global user.name "ganesh5124"
+                    cd java-app
                     # Replace the tag in the deployment YAML file with the current build number
-                    sed -i "s/docker-app:.*/docker-app:${BUILD_NUMBER}/g" manifestfiles/deployment.yaml
+                    sed -i "s/docker-apps:.*/docker-apps:${BUILD_NUMBER}/g" manifestfiles/deployment.yaml
                     # Stage all changes
                     git add .
             
                     # Commit changes with a message containing the build number
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    echo ${github-token}
+                    echo ${githubtoken}
                     # Push changes to the main branch of the GitHub repository
-                    git push https://${github-token-new}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                    git push https://${githubtoken}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
         '''
             }
 }
