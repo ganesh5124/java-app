@@ -10,7 +10,6 @@ pipeline {
         environment {
           GIT_REPO_NAME = "java-app"
           GIT_USER_NAME = "ganesh5124"
-          
         }
             steps {
                 script {
@@ -25,11 +24,6 @@ pipeline {
             }
         }
         stage('SonarQube Scan') {
-        environment {
-          GIT_REPO_NAME = "java-app"
-          GIT_USER_NAME = "ganesh5124"
-          
-        }
           steps {
               echo 'Scanning project'
                 // List directory contents for debugging purposes
@@ -64,8 +58,12 @@ pipeline {
               sh 'cd java-app && docker build -t ganesh5124/docker-apps:${BUILD_NUMBER} .'
             }
         }
-        
-        
+    
+    stage('Docker Image Scan'){
+      steps{
+sh "trivy image devopshubg333/k8s:${BUILD_NUMBER}"
+      }
+    }
         stage('Push to Docker Hub') {
           steps {
             script {
