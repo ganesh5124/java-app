@@ -10,6 +10,8 @@ pipeline {
         environment {
           GIT_REPO_NAME = "java-app"
           GIT_USER_NAME = "ganesh5124"
+          SONAR_URL = 'http://52.66.238.60:9000'
+          SONAR_TOKEN = 'squ_07c19e2563895b969f5ce50e2eb92d71295136ce'
         }
             steps {
                 script {
@@ -31,8 +33,8 @@ pipeline {
                 // Run SonarQube scan with specified SonarQube server and login token
                 sh '''cd java-app 
                      mvn sonar:sonar \\
-                    -Dsonar.host.url=http://52.66.238.60:9000 \\
-                    -Dsonar.login=squ_07c19e2563895b969f5ce50e2eb92d71295136ce'''
+                    -Dsonar.host.url=${SONAR_URL} \\
+                    -Dsonar.login=${SONAR_TOKEN}'''
               }
         }
         stage('Generating artifact with maven build tool'){
@@ -79,11 +81,6 @@ sh "trivy image devopshubg333/k8s:${BUILD_NUMBER}"
           }
         }
         stage('Update Deployment File') {
-        environment {
-          GIT_REPO_NAME = "java-app"
-          GIT_USER_NAME = "ganesh5124"
-          
-        }
         steps {
             echo 'Update Deployment File'
              // Use github-token to access GitHub
