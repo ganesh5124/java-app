@@ -5,7 +5,8 @@ metadata:
 spec:
   selector:
     app: demo-app
-  type: LoadBalancer
+  type: NodePort
   ports:
-  - port: 8080
-    targetPort: 8098
+  - nodePort: 30002
+    port: 80
+    targetPort: 80
