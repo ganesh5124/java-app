@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
@@ -8,28 +9,23 @@
     <version>3.1</version>
     <packaging>war</packaging>
 
-	<properties>
-		<docker.image.prefix>kammana</docker.image.prefix>
-		<sonar.host.url>http://35.154.24.213:9000/</sonar.host.url>
+    <properties>
+        <docker.image.prefix>kammana</docker.image.prefix>
+        <sonar.host.url>http://35.154.24.213:9000</sonar.host.url>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
-	</properties>
-
-
-	<distributionManagement>
-		 <snapshotRepository>
-		    <id>nexusRepo</id>
-		    <url>http://54.236.16.181:8081/repository/batch12-snapshots/</url>
-		 </snapshotRepository>
-		
-		<repository>
-		    <id>nexusRepo</id>
-		    <url>http://54.236.16.181:8081/repository/batch12-release/</url>
-		</repository>
-  	</distributionManagement>
-	
-
-        	
- 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexusRepo</id>
+            <url>http://54.236.16.181:8081/repository/batch12-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexusRepo</id>
+            <url>http://54.236.16.181:8081/repository/batch12-release/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -41,12 +37,11 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-		<plugin>
-           	 	<groupId>org.sonarsource.scanner.maven</groupId>
-            		<artifactId>sonar-maven-plugin</artifactId>
-            		<version>3.9.0.2155</version> <!-- Use the latest compatible version -->
-        	</plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.0.2155</version> <!-- Use the latest compatible version -->
+            </plugin>
         </plugins>
     </build>
 </project>
-
