@@ -17,3 +17,5 @@ spec:
         image: ganesh5124/docker-apps:28
         ports:
         - containerPort: 8098
+
+        
