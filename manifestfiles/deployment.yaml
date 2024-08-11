@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: demo-app
+  labels:
+    app: demo-app
 spec:
   replicas: 1
   selector:
@@ -13,9 +15,8 @@ spec:
         app: demo-app
     spec:
       containers:
-      - name: demo-app
+      - name: demo-app-container
         image: ganesh5124/docker-apps:28
         ports:
-        - containerPort: 8098
+        - containerPort: 80
 
-        
