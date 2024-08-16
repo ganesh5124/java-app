@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: demo-app-container
-        image: ganesh5124/docker-apps:${BUILD_NUMBER}
+        image: ganesh5124/docker-apps:24
         ports:
         - containerPort: 80
 
