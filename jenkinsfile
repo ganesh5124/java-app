@@ -98,7 +98,7 @@ sh "trivy image devopshubg333/k8s:${BUILD_NUMBER}"
             
                     # Commit changes with a message containing the build number
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    echo ${githubtoken}
+                    
                     # Push changes to the main branch of the GitHub repository
                     git push https://${githubtoken}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
         '''
