@@ -1,22 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo-app
+  name: web-app-deploy
   labels:
-    app: demo-app
+    app: web-app
+    env: demo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: demo-app
+      app: web-app
+      env: demo
   template:
     metadata:
+      name: web-app
       labels:
-        app: demo-app
+        app: web-app
+        env: demo
     spec:
       containers:
       - name: demo-app-container
         image: ganesh5124/docker-apps:25
         ports:
         - containerPort: 80
-
