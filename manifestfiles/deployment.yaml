@@ -4,22 +4,22 @@ metadata:
   name: web-app-deploy
   labels:
     app: web-app
-    env: demo
+    env: web
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: web-app
-      env: demo
+      env: web
   template:
     metadata:
       name: web-app
       labels:
         app: web-app
-        env: demo
+        env: web
     spec:
       containers:
-      - name: demo-app-container
+      - name: web-container
         image: ganesh5124/docker-apps:25
         ports:
         - containerPort: 80

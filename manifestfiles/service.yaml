@@ -5,7 +5,7 @@ metadata:
 spec:
   selector:
     app: web-app
-    env: demo
+    env: web
   type: NodePort
   ports:
   - nodePort: 30002
