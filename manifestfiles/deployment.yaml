@@ -20,6 +20,6 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: ganesh5124/docker-apps:25
+        image: ganesh5124/docker-apps:pyhtonapp
         ports:
         - containerPort: 80
