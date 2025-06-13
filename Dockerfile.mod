@@ -14,7 +14,7 @@ COPY src ./src
 RUN mvn clean instal    l -DskipTests
 
 ## Stage 2: Tomcat Deploy Stage
-FROM tomcat:9.0.79-jdk17-temurin-jammy
+FROM tomcat:9.0.99-jdk17-temurin-jammy
 
 # Set up working directory
 WORKDIR /usr/local/tomcat/webapps
